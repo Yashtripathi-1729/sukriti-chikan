@@ -12,6 +12,7 @@ Respond ONLY with valid JSON (no markdown, no backticks):
   "category": "One of: kurti, suit, saree, dupatta, fabric, men, kids, accessories",
   "fabric": "Detected fabric type (e.g., Cotton, Georgette, Chiffon, Modal, Linen)",
   "work_type": "Detected chikankari stitch types (e.g., Shadow Work, Jaali, Tepchi, Murri, Phanda)",
+  "colour": "Main colour in one or two words (e.g., Ivory, Powder Blue, Deep Plum)",
   "tags": ["array", "of", "relevant", "search", "tags"]
 }
 

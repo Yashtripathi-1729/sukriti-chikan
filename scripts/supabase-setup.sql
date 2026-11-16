@@ -12,6 +12,8 @@ create table if not exists products (
   price integer not null default 0,
   images jsonb not null default '[]'::jsonb,
   tags jsonb not null default '[]'::jsonb,
+  colour text not null default '',
+  sizes jsonb not null default '[]'::jsonb,
   is_published boolean not null default false,
   created_at timestamptz not null default now()
 );

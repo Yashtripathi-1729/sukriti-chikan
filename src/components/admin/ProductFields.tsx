@@ -1,15 +1,13 @@
 "use client";
 
-export const CATEGORIES = [
-  "kurti",
-  "suit",
-  "saree",
-  "dupatta",
-  "fabric",
-  "men",
-  "kids",
-  "accessories",
-];
+import {
+  CATEGORIES,
+  DEFAULT_SIZES,
+  SIZED_CATEGORIES,
+  SIZE_ORDER,
+  categoryLabel,
+  sortSizes,
+} from "@/lib/catalog";
 
 // Form state: tags and price are kept as strings while editing
 export type ProductForm = {
@@ -18,6 +16,8 @@ export type ProductForm = {
   category: string;
   fabric: string;
   work_type: string;
+  colour: string;
+  sizes: string[];
   tags: string;
   price: string;
 };
@@ -28,6 +28,8 @@ export const EMPTY_FORM: ProductForm = {
   category: "kurti",
   fabric: "",
   work_type: "",
+  colour: "",
+  sizes: [],
   tags: "",
   price: "",
 };
@@ -38,17 +40,23 @@ type Source = {
   category?: string;
   fabric?: string;
   work_type?: string;
+  colour?: string;
+  sizes?: string[];
   tags?: string[];
   price?: number;
 };
 
+// AI results have no sizes; clothing then starts with the common S–XL range
 export function toForm(src: Source, keepPrice = ""): ProductForm {
+  const category = CATEGORIES.includes(src.category || "") ? src.category! : "kurti";
   return {
     name: src.name || "",
     description: src.description || "",
-    category: CATEGORIES.includes(src.category || "") ? src.category! : "kurti",
+    category,
     fabric: src.fabric || "",
     work_type: src.work_type || "",
+    colour: src.colour || "",
+    sizes: src.sizes ?? (SIZED_CATEGORIES.includes(category) ? DEFAULT_SIZES : []),
     tags: (src.tags || []).join(", "),
     price: src.price != null ? String(src.price) : keepPrice,
   };
@@ -61,6 +69,8 @@ export function fromForm(form: ProductForm) {
     category: form.category,
     fabric: form.fabric.trim(),
     work_type: form.work_type.trim(),
+    colour: form.colour.trim(),
+    sizes: sortSizes(form.sizes),
     tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
     price: Number(form.price),
   };
@@ -87,6 +97,14 @@ export default function ProductFields({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => onChange({ ...form, [key]: e.target.value });
 
+  const toggleSize = (size: string) =>
+    onChange({
+      ...form,
+      sizes: form.sizes.includes(size)
+        ? form.sizes.filter((s) => s !== size)
+        : [...form.sizes, size],
+    });
+
   return (
     <div className="space-y-4">
       <div>
@@ -105,7 +123,7 @@ export default function ProductFields({
           <select value={form.category} onChange={set("category")} className={`${inputClass} capitalize`}>
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>
-                {c}
+                {categoryLabel(c)}
               </option>
             ))}
           </select>
@@ -116,9 +134,41 @@ export default function ProductFields({
         </div>
       </div>
 
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="text-xs text-gray-400 block mb-1">Work Type</label>
+          <input value={form.work_type} onChange={set("work_type")} className={inputClass} />
+        </div>
+        <div>
+          <label className="text-xs text-gray-400 block mb-1">Colour</label>
+          <input value={form.colour} onChange={set("colour")} className={inputClass} />
+        </div>
+      </div>
+
       <div>
-        <label className="text-xs text-gray-400 block mb-1">Work Type</label>
-        <input value={form.work_type} onChange={set("work_type")} className={inputClass} />
+        <label className="text-xs text-gray-400 block mb-1">
+          Sizes available {form.sizes.length === 0 && "(none selected = Free size)"}
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {SIZE_ORDER.map((size) => {
+            const on = form.sizes.includes(size);
+            return (
+              <button
+                key={size}
+                type="button"
+                onClick={() => toggleSize(size)}
+                aria-pressed={on}
+                className={`min-w-[48px] px-3 py-2.5 rounded-lg border text-sm font-medium ${
+                  on
+                    ? "bg-chikan-700 border-chikan-700 text-white"
+                    : "bg-white border-gray-200 text-gray-500"
+                }`}
+              >
+                {size}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div>

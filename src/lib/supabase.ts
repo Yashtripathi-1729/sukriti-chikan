@@ -31,6 +31,8 @@ export type Product = {
   price: number;
   images: string[];
   tags: string[];
+  colour: string;
+  sizes: string[];
   is_published: boolean;
   created_at: string;
 };

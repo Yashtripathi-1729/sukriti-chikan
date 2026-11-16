@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSupabaseAdmin, removeImages } from "@/lib/supabase";
 import { isAdmin } from "@/lib/auth";
 
@@ -11,8 +12,15 @@ const EDITABLE_FIELDS = [
   "price",
   "images",
   "tags",
+  "colour",
+  "sizes",
   "is_published",
 ] as const;
+
+// Store pages are cached; refresh them whenever the catalogue changes
+function refreshStore() {
+  revalidatePath("/", "layout");
+}
 
 function unauthorized() {
   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -55,12 +63,15 @@ export async function POST(req: NextRequest) {
       price: body.price,
       images: body.images,
       tags: body.tags || [],
+      colour: body.colour || "",
+      sizes: body.sizes || [],
       is_published: body.is_published ?? true,
     })
     .select()
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  refreshStore();
   return NextResponse.json(data);
 }
 
@@ -93,6 +104,7 @@ export async function PATCH(req: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   await removeImages(removedImages);
+  refreshStore();
   return NextResponse.json({ success: true });
 }
 
@@ -111,5 +123,6 @@ export async function DELETE(req: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   await removeImages((data?.images as string[]) || []);
+  refreshStore();
   return NextResponse.json({ success: true });
 }
