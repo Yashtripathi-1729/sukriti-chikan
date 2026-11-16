@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateProductDetails } from "@/lib/gemini";
+import { isAdmin } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
-  const password = req.headers.get("x-admin-password");
-  if (password !== process.env.ADMIN_PASSWORD) {
+  if (!isAdmin(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

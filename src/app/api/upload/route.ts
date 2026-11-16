@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdmin, removeImages } from "@/lib/supabase";
+import { isAdmin } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
-  const password = req.headers.get("x-admin-password");
-  if (password !== process.env.ADMIN_PASSWORD) {
+  if (!isAdmin(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -26,21 +26,18 @@ export async function POST(req: NextRequest) {
 
     const { error } = await supabase.storage
       .from("product-images")
-      .upload(path, buffer, {
-        contentType: file.type,
-        upsert: false,
-      });
+      .upload(path, buffer, { contentType: file.type, upsert: false });
 
     if (error) {
-      console.error("Upload error:", error);
-      continue;
+      // All-or-nothing: clean up what was already uploaded
+      await removeImages(urls);
+      return NextResponse.json(
+        { error: `Photo upload failed: ${error.message}` },
+        { status: 500 }
+      );
     }
 
-    const { data: urlData } = supabase.storage
-      .from("product-images")
-      .getPublicUrl(path);
-
-    urls.push(urlData.publicUrl);
+    urls.push(supabase.storage.from("product-images").getPublicUrl(path).data.publicUrl);
   }
 
   return NextResponse.json({ urls });

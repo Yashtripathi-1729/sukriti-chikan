@@ -15,10 +15,27 @@ Respond ONLY with valid JSON (no markdown, no backticks):
   "tags": ["array", "of", "relevant", "search", "tags"]
 }
 
-Be specific about the embroidery style, fabric, and color you observe in the image.`;
+Be specific about the embroidery style, fabric, and color you observe in the image.
+If no chikankari work is visible, still describe the garment as accurately as you can and leave work_type empty.
+Never refuse; always return the JSON object.`;
 
-export async function generateProductDetails(imageBase64: string, mimeType: string) {
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+// Retries cover temporary "high demand" 503s and the occasional non-JSON reply
+export async function generateProductDetails(imageBase64: string, mimeType: string, attempts = 3) {
+  for (let i = 1; ; i++) {
+    try {
+      return await callGemini(imageBase64, mimeType);
+    } catch (err) {
+      if (i >= attempts) throw err;
+      await new Promise((r) => setTimeout(r, 1500 * i));
+    }
+  }
+}
+
+async function callGemini(imageBase64: string, mimeType: string) {
+  const model = genAI.getGenerativeModel({
+    model: "gemini-4-hydrogen",
+    generationConfig: { responseMimeType: "application/json" },
+  });
 
   const result = await model.generateContent([
     CHIKAN_PROMPT,
