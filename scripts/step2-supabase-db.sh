@@ -1,0 +1,25 @@
+#!/bin/bash
+# Step 2: Set up Supabase database
+# This prints the SQL you need to paste into Supabase SQL Editor
+
+echo "=========================================="
+echo "  Step 2: Supabase Database Setup"
+echo "=========================================="
+echo ""
+echo "1. Go to your Supabase project dashboard"
+echo "2. Click 'SQL Editor' in the left sidebar"
+echo "3. Click 'New Query'"
+echo "4. Copy-paste the ENTIRE block below and click 'Run'"
+echo ""
+echo "------- COPY BELOW THIS LINE -------"
+echo ""
+cat "$(dirname "$0")/supabase-setup.sql"
+echo ""
+echo "------- COPY ABOVE THIS LINE -------"
+echo ""
+echo "5. You should see 'Success. No rows returned' — that means it worked!"
+echo ""
+echo "6. Verify: Go to 'Table Editor' in sidebar → you should see 'products' table"
+echo "7. Verify: Go to 'Storage' in sidebar → you should see 'product-images' bucket"
+echo ""
+echo "Once done, run: bash scripts/step3-start.sh"
