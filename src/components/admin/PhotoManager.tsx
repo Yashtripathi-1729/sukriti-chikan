@@ -54,9 +54,9 @@ export default function PhotoManager({
                   type="button"
                   onClick={() => remove(i)}
                   aria-label="Remove photo"
-                  className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-sm leading-6"
+                  className="absolute top-0 right-0 w-10 h-10 flex items-start justify-end p-1.5"
                 >
-                  &times;
+                  <span className="w-7 h-7 rounded-full bg-black/60 text-white text-base leading-7 text-center">&times;</span>
                 </button>
                 {i === 0 && (
                   <span className="absolute bottom-1 left-1 text-[10px] bg-chikan-700 text-white px-1.5 py-0.5 rounded">
@@ -68,7 +68,7 @@ export default function PhotoManager({
                 <button
                   type="button"
                   onClick={() => makeCover(i)}
-                  className="text-[11px] text-chikan-600 mt-1 w-full"
+                  className="text-xs text-chikan-600 py-2.5 w-full"
                 >
                   Make cover
                 </button>

@@ -71,7 +71,7 @@ export default function AddProduct() {
     <div className="min-h-screen bg-cream">
       <header className="bg-white border-b border-chikan-100 px-4 py-4 flex items-center justify-between">
         <h1 className="text-xl font-serif font-bold text-chikan-800">Add Product</h1>
-        <button onClick={() => router.push("/admin")} className="text-sm text-gray-500 hover:text-gray-700">
+        <button onClick={() => router.push("/admin")} className="text-sm text-gray-500 hover:text-gray-700 px-2 py-2.5 -mr-2">
           Cancel
         </button>
       </header>

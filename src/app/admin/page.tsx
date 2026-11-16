@@ -130,7 +130,7 @@ export default function AdminDashboard() {
                   <button
                     onClick={() => togglePublish(p)}
                     title={p.is_published ? "Tap to hide from store" : "Tap to show in store"}
-                    className={`text-xs px-3 py-1 rounded-full font-medium ${
+                    className={`text-xs px-3 py-2 rounded-full font-medium ${
                       p.is_published ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-500"
                     }`}
                   >
@@ -138,13 +138,13 @@ export default function AdminDashboard() {
                   </button>
                   <Link
                     href={`/admin/edit/${p.id}`}
-                    className="text-xs text-chikan-600 hover:text-chikan-800 p-1"
+                    className="text-xs text-chikan-600 hover:text-chikan-800 px-2 py-2"
                   >
                     Edit
                   </Link>
                   <button
                     onClick={() => deleteProduct(p)}
-                    className="text-xs text-red-400 hover:text-red-600 p-1"
+                    className="text-xs text-red-400 hover:text-red-600 px-2 py-2"
                   >
                     Delete
                   </button>
